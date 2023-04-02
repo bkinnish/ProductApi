@@ -2,9 +2,8 @@
 
 Project to allow Products to be retrieved, created, updated and deleted.
 
-Retreive a list of products. Future: allow custom sorting and paging.
+Retreive a list of products.
 Allow products to be added, edited or deleted.
-There are currently no tests, as time is limited.
 
 
 ## Development

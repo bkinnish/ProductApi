@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProductsApi.Models.Products;
@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using ProductsApi.Services.Products;
+using System.Threading;
+using ProductsApi.Models;
 
 namespace ProductsApi.Controllers
 {
@@ -23,18 +25,25 @@ namespace ProductsApi.Controllers
         }
 
         [HttpGet("api/product")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] UrlQueryParameters urlQueryParameters,
+            CancellationToken cancellationToken)
         {
-            var products = await _productService.GetAllAsync();
-
-            var productDto = new ProductDto
+            if (!ModelState.IsValid)
             {
-                Products = products,
-                ActivePage = 1,
-                MaxPages = 2
-            };
+                return BadRequest();
+            }
 
-            return Ok(productDto);
+            try
+            {
+                var products = await _productService.GetByPagedAsync(urlQueryParameters.Limit,
+                    urlQueryParameters.Page, urlQueryParameters.SortOrder, urlQueryParameters.sortAsc, cancellationToken);
+                return Ok(products);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         [HttpGet("api/product/{productId}")]
@@ -102,6 +111,12 @@ namespace ProductsApi.Controllers
             var success = await _productService.DeleteAsync(productId);
 
             return success ? NoContent() : StatusCode(StatusCodes.Status410Gone);
+        }
+
+        [HttpGet("api/product/version")]
+        public IActionResult GetVersion()
+        {
+            return Ok("V1.0.0");
         }
     }
 }

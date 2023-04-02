@@ -57,5 +57,9 @@ namespace ProductsApi
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+                //.ConfigureLogging(logging =>
+                //{
+                //    logging.AddAzureWebAppDiagnostics();
+                //})
     }
 }

@@ -14,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using ProductsApi.Services.Products;
 using Microsoft.EntityFrameworkCore;
 using ProductsApi.Models;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace ProductsApi
 {
@@ -31,20 +33,31 @@ namespace ProductsApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var allowedCorsOrigins = Configuration.GetValue<string>("AllowedCorsOrigins");
+
             services.AddCors(options =>
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                        // If deploying to Azure App Services, go to the App Service Configuration and add a AllowedCorsOrigins setting.
+                        policy.WithOrigins(allowedCorsOrigins).AllowAnyHeader().AllowAnyMethod(); //.AllowAnyOrigin();
                         // https://learn.microsoft.com/en-us/answers/questions/844826/cors-error-while-fetching-data-from-aspnet-core-we.html
                     });
             });
             
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(ops =>
+            {
+                ops.JsonSerializerOptions.IgnoreNullValues = true;
+                ops.JsonSerializerOptions.WriteIndented = true;
+                ops.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                ops.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                ops.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             services.AddDbContext<ProductContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(connectionString));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddSwaggerGen(c =>

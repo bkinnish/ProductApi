@@ -1,11 +1,19 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace ProductsApi.Models.Products
 {
+    /// <summary>
+    /// Describes a product. (ie Apple, Orange, Pear, etc)
+    /// </summary>
     public class ProductDto
     {
-        public List<Product> Products { get; set; }
-        public int ActivePage { get; set; }
-        public int MaxPages { get; set; }
+        public int? Id { get; set; }
+
+        public string Name { get; set; }
+
+        public decimal Price { get; set; }
+
+        public string Type { get; set; }
+
+        public bool Active { get; set; }
     }
 }
