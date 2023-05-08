@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProductsApi.Models.Brands;
 using ProductsApi.Models.Products;
 
 namespace ProductsApi.Models
@@ -10,6 +11,7 @@ namespace ProductsApi.Models
         {
         }
 
-        public DbSet<Product> Products { get; set; } = null!;
+        public DbSet<Product> Products { get; set; } = null;
+        public DbSet<Brand> Brands { get; set; } = null;
     }
 }

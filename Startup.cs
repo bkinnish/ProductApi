@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using ProductsApi.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using ProductsApi.Services.Brands;
 
 namespace ProductsApi
 {
@@ -56,7 +57,7 @@ namespace ProductsApi
                 ops.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
                 ops.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-            services.AddDbContext<ProductContext>(options =>
+            services.AddDbContextPool<ProductContext>(options =>
                 options.UseSqlServer(connectionString));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -65,6 +66,7 @@ namespace ProductsApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProductsApi", Version = "v1" });
             });
             services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IBrandService, BrandService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
